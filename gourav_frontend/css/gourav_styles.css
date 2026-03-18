@@ -109,7 +109,7 @@ table th, table td {
   
 }
 table th {
-  background-color: #2c3e50; /* Matches your header theme */
+  background-color: #2c3e50; /* Matches  header theme */
   color: white;
   text-align: center; 
 }
@@ -117,4 +117,30 @@ table th {
 /* Use alternating row colors to improve the user interface */
 table tr:nth-child(even) {
   background-color: #f2f2f2; 
+}
+/* ===== PROJECTS SECTION STYLING ===== */
+
+#projects ol li {
+  margin-bottom: 25px;
+  line-height: 1.6;
+}
+
+/* Styling project titles */
+#projects strong {
+  color: #2c3e50;
+  font-size: 1.2rem;
+}
+
+/*  project links */
+#projects a {
+  color: #3498db; 
+  text-decoration: none;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+/*  Add hover color effects */
+#projects a:hover {
+  color: #e74c3c; 
+  text-decoration: underline;
 }
