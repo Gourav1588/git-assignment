@@ -14,3 +14,22 @@ body {
   color: #333; 
   line-height: 1.6; 
 }
+
+/* ===== HEADER ===== */
+/* Centered layout for good presentation */
+header {
+  text-align: center;
+  background-color: #2c3e50;
+  color: white;
+  padding: 20px;
+}
+header h1 {
+  font-size: 2.5rem; /* Specific requirement for heading font-size */
+}
+/* Profile image style */
+header img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%; /* makes image circular */
+  margin-top: 10px;
+}
