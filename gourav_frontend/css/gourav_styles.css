@@ -1,0 +1,16 @@
+/* ===== GLOBAL RESET ===== */
+/* Reset removes any default padding set by web browsers */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ===== BODY STYLING ===== */
+/* Using a simple font to make it easy to read */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f6f8;
+  color: #333; 
+  line-height: 1.6; 
+}
