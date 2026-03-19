@@ -34,4 +34,26 @@ const students = [
     ],
     attendance: 70
   }
-];console.log(students);
+];
+//console.log(students);
+
+
+// Function for Total Marks Calculation
+
+
+function calculateTotalMarks(studentList) {
+    studentList.forEach(student => {
+        let sum = 0;
+        student.marks.forEach(item => {
+            sum += item.score;
+        });
+        student.totalMarks = sum; 
+        console.log(`${student.name} Total Marks: ${student.totalMarks}`);
+    });
+}
+
+
+
+
+// calling function
+calculateTotalMarks(students);
