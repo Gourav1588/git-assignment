@@ -52,8 +52,17 @@ function calculateTotalMarks(studentList) {
     });
 }
 
+// Function for Average Marks Calculation
 
 
+function calculateAverageMarks(studentList) {
+    studentList.forEach(student => {
+        
+            student.averageMarks = student.totalMarks / student.marks.length;
+            console.log(`${student.name} Average: ${student.averageMarks.toFixed(1)}`);
+    });
+}
 
 // calling function
 calculateTotalMarks(students);
+calculateAverageMarks(students);
