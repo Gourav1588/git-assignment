@@ -137,10 +137,34 @@ function getSubjectAverage(students) {
 }
 
 
-const results = getSubjectAverage(students);
+// const results = getSubjectAverage(students);
 
-for (let subject in results) {
-    const avg = results[subject].total / results[subject].count;
+// for (let subject in results) {
+//     const avg = results[subject].total / results[subject].count;
     
-    console.log(`Average ${subject} Score: ${avg.toFixed(1)}`);
+//     console.log(`Average ${subject} Score: ${avg.toFixed(1)}`);
+// }
+
+
+
+// function to find class topper
+function getClassTopper(studentList) {
+
+    let highest = 0;
+    let topper = "";
+
+    studentList.forEach(student => {
+
+        if (student.totalMarks > highest) {
+            highest = student.totalMarks;
+            topper = student.name;
+        }
+
+    });
+
+    console.log("\nClass Topper:");
+    console.log(`Class Topper: ${topper} with ${highest} marks`);
 }
+
+calculateTotalMarks(students);
+getClassTopper(students);
