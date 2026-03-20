@@ -48,3 +48,15 @@ This screenshot shows the highest marks scored in each subject along with the st
 #### . Output
 ![Highest Output](Console_Output/HIGHEST_OUTPUT.png)
 
+---
+
+### 5. Subject-wise Average
+
+This screenshot shows the average marks for each subject calculated by summing all student scores and dividing by the number of students.
+
+#### . Code
+![Subject Average Code](Console_Output/SUBJECT_AVG_CODE.png)
+
+#### . Output
+![Subject Average Output](Console_Output/SUBJECT_AVG_OUTPUT.png)
+
