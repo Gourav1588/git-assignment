@@ -187,3 +187,29 @@ lowStockBtn.addEventListener("click", function () {
   renderProducts(filteredProducts);
 });
 
+
+const sortSelect = document.getElementById("sortSelect");
+
+sortSelect.addEventListener("change", function () {
+
+  const value = this.value;
+
+  // Copy array to avoid modifying original
+  let sorted = [...filteredProducts];
+
+  if (value === "low") {
+    sorted.sort((a, b) => a.price - b.price);
+  } 
+  else if (value === "high") {
+    sorted.sort((a, b) => b.price - a.price);
+  } 
+  else if (value === "az") {
+    sorted.sort((a, b) => a.name.localeCompare(b.name));
+  } 
+  else if (value === "za") {
+    sorted.sort((a, b) => b.name.localeCompare(a.name));
+  }
+
+  renderProducts(sorted);
+});
+
