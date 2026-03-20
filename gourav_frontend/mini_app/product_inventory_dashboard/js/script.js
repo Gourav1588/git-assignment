@@ -92,4 +92,38 @@ function saveAndRender() {
   renderProducts(products);
   updateAnalytics();
 }
+// Handling form submission for adding new product
+document.getElementById("productForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  // Getting values from input fields
+  const name = document.getElementById("name").value;
+  const price = +document.getElementById("price").value;
+  const stock = +document.getElementById("stock").value;
+  const category = document.getElementById("category").value;
+
+  // Basic validation
+  if (!name || price <= 0 || stock < 0 || !category) {
+    alert("Invalid input");
+    return;
+  }
+
+  // Creating new product object
+  const newProduct = {
+    id: Date.now(), // unique id using timestamp
+    name,
+    price,
+    stock,
+    category
+  };
+
+  // Adding new product to array
+  products.push(newProduct);
+
+  // Save and update UI
+  saveAndRender();
+
+  // Clear form after submission
+  this.reset();
+});
 
