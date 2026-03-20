@@ -72,3 +72,14 @@ This screenshot shows the student with the highest total marks in the class. The
 #### . Output
 ![Topper Output](Console_Output/TOPPER_OUTPUT.png)
 
+---
+
+### 7. Grades and Fail Conditions
+
+This screenshot shows the average marks, assigned grade, and fail conditions for each student. The program first checks fail conditions (subject marks ≤ 40 or attendance < 75), then assigns grades based on average.
+
+#### . Code
+![Grade Code](Console_Output/GRADE_CODE.png)
+
+#### . Output
+![Grade Output](Console_Output/GRADE_OUTPUT.png)
