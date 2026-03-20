@@ -11,3 +11,43 @@ let products = JSON.parse(localStorage.getItem("products")) || [
     { id: 9, name: "Gaming Mouse", price: 4500, stock: 1, category: "electronics" },
     { id: 10, name: "Travel Backpack", price: 3500, stock: 0, category: "accessories" }
 ];
+
+// Getting reference of product grid where cards will be shown
+
+const grid = document.getElementById("productGrid");
+
+
+// This function is responsible for showing products on UI
+// It clears old data and re-renders updated list every time
+function renderProducts(data) {
+  grid.innerHTML = "";
+
+  if (data.length === 0) {
+    grid.innerHTML = "<p>No products found</p>";
+    return;
+  }
+
+  data.forEach((p) => {
+    const card = document.createElement("div");
+
+    card.innerHTML = `
+      <h3>${p.name}</h3>
+      <p>Category: ${p.category}</p>
+      <p>Price: ₹${p.price}</p>
+      <p>Stock: ${p.stock}</p>
+      <button onclick="deleteProduct(${p.id})">Delete</button>
+    `;
+
+    grid.appendChild(card);
+  });
+}
+
+// This simulates fetching data from server (like real API)
+// We are adding delay using setTimeout to mimic loading
+function fetchProducts() {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(products);
+    }, 1500);
+  });
+}
