@@ -24,3 +24,15 @@ This screenshot shows the total marks calculated for each student by summing all
 #### . Output
 ![Total Output](Console_Output/TOTAL_MARKS_OUTPUT.png)
 
+---
+
+### 3. Average Marks (Each Student)
+
+This screenshot shows the average marks calculated for each student by dividing total marks by number of subjects.
+
+#### . Code
+![Average Code](Console_Output/AVERAGE_CODE.png)
+
+#### . Output
+![Average Output](Console_Output/AVERAGE_OUTPUT.png)
+
