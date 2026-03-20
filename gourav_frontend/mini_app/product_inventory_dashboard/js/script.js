@@ -84,3 +84,12 @@ function deleteProduct(id) {
   products = products.filter(p => p.id !== id);
   saveAndRender();
 }
+
+// This function saves data in localStorage
+// and re-renders UI after any change
+function saveAndRender() {
+  localStorage.setItem("products", JSON.stringify(products));
+  renderProducts(products);
+  updateAnalytics();
+}
+
