@@ -51,3 +51,14 @@ function fetchProducts() {
     }, 1500);
   });
 }
+
+// When page loads, we show loading first
+// Then fetch data and render it
+window.onload = async function () {
+  grid.innerHTML = "<p>Loading products...</p>";
+
+  const data = await fetchProducts();
+
+  renderProducts(data);
+  updateAnalytics();
+};
