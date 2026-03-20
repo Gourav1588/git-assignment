@@ -36,3 +36,15 @@ This screenshot shows the average marks calculated for each student by dividing 
 #### . Output
 ![Average Output](Console_Output/AVERAGE_OUTPUT.png)
 
+---
+
+### 4. Subject-wise Highest Marks
+
+This screenshot shows the highest marks scored in each subject along with the student name. The program uses nested loops and dynamic object storage to track the highest values.
+
+#### . Code
+![Highest Code](Console_Output/HIGHEST_CODE.png)
+
+#### . Output
+![Highest Output](Console_Output/HIGHEST_OUTPUT.png)
+
