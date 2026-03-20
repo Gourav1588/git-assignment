@@ -127,3 +127,8 @@ document.getElementById("productForm").addEventListener("submit", function(e) {
   this.reset();
 });
 
+// Create a separate list for filtered/sorted data
+// Original products array stays untouched
+
+let filteredProducts = [...products];
+
