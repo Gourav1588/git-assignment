@@ -132,3 +132,20 @@ document.getElementById("productForm").addEventListener("submit", function(e) {
 
 let filteredProducts = [...products];
 
+// Getting search input
+const searchInput = document.getElementById("searchInput");
+
+// When user types, filter products
+searchInput.addEventListener("input", function () {
+
+  const query = this.value.toLowerCase();
+
+  // Filter products based on name
+  filteredProducts = products.filter(p =>
+    p.name.toLowerCase().includes(query)
+  );
+
+  // Re-render UI
+  renderProducts(filteredProducts);
+});
+
