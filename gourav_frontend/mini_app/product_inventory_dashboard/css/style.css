@@ -11,3 +11,13 @@ body {
   background-color: #f5f6fa;
   padding: 20px;
 }
+
+/* Center header, add spacing, and style title for clean look */
+header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+header h1 {
+  color: #2c3e50;
+}
