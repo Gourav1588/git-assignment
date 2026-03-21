@@ -13,3 +13,22 @@ The application allows users to manage products by adding, deleting, searching, 
 - JavaScript
 - localStorage  
 - Promise + setTimeout  
+
+## Project Structure  
+
+mini_app/  
+└── product_inventory_dashboard/  
+    ├── index.html  
+    ├── css/  
+    │   └── style.css  
+    ├── js/  
+    │   └── script.js  
+    └── README.md  
+
+    ## How to Run  
+
+1. Clone or download the repository  
+2. Open the project folder  
+3. Open index.html in any browser  
+
+No setup is required.
