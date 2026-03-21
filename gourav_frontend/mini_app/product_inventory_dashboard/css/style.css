@@ -72,3 +72,21 @@ header h1 {
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   transition: transform 0.2s; 
 }
+
+
+
+
+
+/* Use a responsive grid so products adjust automatically to screen size without extra media queries.
+   Each card keeps a minimum width and neatly wraps, keeping the layout clean on all devices. */
+#productGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+
+
+
+
