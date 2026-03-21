@@ -86,6 +86,40 @@ header h1 {
   margin-bottom: 20px;
 }
 
+/* Individual product card styling */
+/* Background white*/
+#productGrid div {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column; /* Keeps text and button stacked neatly */
+}
+
+/* Product title within the card */
+#productGrid h3 {
+  margin-bottom: 10px;
+  color: #2c3e50;
+  font-size: 1.2rem;
+}
+
+/* Red delete button to signify a destructive action (UX best practice) */
+#productGrid button {
+  margin-top: auto; 
+  padding: 6px 10px;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+/* Darker red on hover to provide visual feedback */
+#productGrid button:hover {
+  background-color: #c0392b;
+}
 
 
 
