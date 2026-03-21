@@ -26,8 +26,14 @@ function renderProducts(data) {
   data.forEach((p) => {
     const card = document.createElement("div");
 
+    const stockBadge = p.stock === 0
+      ? `<span class="badge out-of-stock">Out of Stock</span>`
+      : p.stock < 5
+      ? `<span class="badge low-stock">&#9888; Low Stock</span>`
+      : "";
+
     card.innerHTML = `
-      <h3>${p.name}</h3>
+      <h3>${p.name} ${stockBadge}</h3>
       <p>Category: ${p.category}</p>
       <p>Price: ₹${p.price}</p>
       <p>Stock: ${p.stock}</p>
@@ -157,10 +163,6 @@ function loadCategories() {
     categoryFilter.appendChild(option);
   });
 }
-
-
-
-
 
 function applyFilters() {
   let result = [...products];
