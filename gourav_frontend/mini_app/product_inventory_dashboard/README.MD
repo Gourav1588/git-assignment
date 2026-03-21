@@ -65,3 +65,10 @@ mini_app/
 Shows all products in a grid along with inventory analytics like total products, total value, and out-of-stock count.  
 
 ![Dashboard](./screenshots/dashboard.png)
+
+---
+
+### Search Functionality  
+Shows how products are filtered in real time when typing in the search bar.  
+
+![Search](./screenshots/search.png)
