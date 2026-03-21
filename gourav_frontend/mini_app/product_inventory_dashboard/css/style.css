@@ -1,126 +1,101 @@
-/* Reset default browser spacing */
+/* Reset default browser styles so layout is predictable */
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
-/* Apply base styles to the entire page */
+/* Main page styling (dark theme base) */
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f5f6fa;
-  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background: #12112a;
+  color: #e0dff8;
+  padding: 28px 16px;
+  min-height: 100vh;
 }
 
-/* Center header, add spacing, and style title for clean look */
+/* Center all main sections for a clean dashboard look */
+header,
+#controls,
+#analytics,
+#productGrid,
+#formSection {
+  max-width: 960px;
+  margin: 0 auto 20px;
+}
+
+/* Header styling with gradient for a premium feel */
 header {
-  text-align: center;
-  margin-bottom: 20px;
+  background: linear-gradient(135deg, #6c3fc5, #c042b8);
+  color: #fff;
+  padding: 22px 30px;
+  border-radius: 14px;
+  box-shadow: 0 6px 24px rgba(192,66,184,0.35);
 }
 
 header h1 {
-  color: #2c3e50;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
-
-/* Container for all search, filter, and sort controls */
-/* Uses flexbox to allow items to wrap on smaller screens (Responsive) */
+/* Controls section (search, filters, sort) */
 #controls {
+  background: #1c1b3a;
+  border-radius: 14px;
+  padding: 18px 24px;
+  border: 1px solid #2e2b55;
   display: flex;
-  gap: 10px;
   flex-wrap: wrap;
-  margin-bottom: 20px;
+  gap: 12px;
+  align-items: center;
 }
 
-/* Consistent styling for all interactive elements in the control bar */
+/* Inputs and dropdown styling */
 #controls input,
-#controls select,
-#controls button {
-  padding: 8px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  outline: none; 
-}
-
-/* Visual feedback for user interaction on buttons */
-#controls button:hover {
-  background-color: #3498db;
-  color: white;
-  cursor: pointer;
-  transition: 0.3s; 
-}
-
-/* Container for dashboard statistics cards */
-/* Uses flex: 1 to distribute cards equally across the header */
-#analytics {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 20px;
-}
-
-
-
-/* Individual data cards within the analytics bar */
-/* Background white + shadow creates a clean 'Card' UI effect */
-#analytics div {
+#controls select {
+  padding: 9px 13px;
+  border: 1px solid #3a3760;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  background: #12112a;
+  color: #e0dff8;
   flex: 1;
-  background: white;
-  padding: 15px;
+  min-width: 150px;
+}
+
+/* Focus effect to improve user interaction */
+#controls input:focus,
+#controls select:focus {
+  border-color: #a855f7;
+  box-shadow: 0 0 0 3px rgba(168,85,247,0.15);
+}
+
+/* Placeholder color adjustment */
+#controls input::placeholder {
+  color: #5a587a;
+}
+
+/* Low stock button styling */
+#lowStockBtn {
+  padding: 9px 18px;
   border-radius: 8px;
-  text-align: center;
-  font-weight: bold;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  transition: transform 0.2s; 
-}
-
-
-
-
-
-/* Use a responsive grid so products adjust automatically to screen size without extra media queries.
-   Each card keeps a minimum width and neatly wraps, keeping the layout clean on all devices. */
-#productGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 15px;
-  margin-bottom: 20px;
-}
-
-/* Individual product card styling */
-/* Background white*/
-#productGrid div {
-  background: white;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column; /* Keeps text and button stacked neatly */
-}
-
-/* Product title within the card */
-#productGrid h3 {
-  margin-bottom: 10px;
-  color: #2c3e50;
-  font-size: 1.2rem;
-}
-
-/* Red delete button to signify a destructive action (UX best practice) */
-#productGrid button {
-  margin-top: auto; 
-  padding: 6px 10px;
-  background-color: #e74c3c;
-  color: white;
-  border: none;
-  border-radius: 5px;
+  background: #12112a;
+  border: 1px solid #3a3760;
   cursor: pointer;
-  transition: background 0.2s;
+  color: #c0bef0;
+  font-weight: 600;
 }
 
-/* Darker red on hover to provide visual feedback */
-#productGrid button:hover {
-  background-color: #c0392b;
+/* Hover effect for better feedback */
+#lowStockBtn:hover {
+  border-color: #a855f7;
+  color: #a855f7;
 }
 
-
-
-
+/* Active state when filter is applied */
+#lowStockBtn.active {
+  background: linear-gradient(135deg, #7c3aed, #c042b8);
+  color: #fff;
+  box-shadow: 0 0 12px rgba(168,85,247,0.4);
+}
