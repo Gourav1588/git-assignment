@@ -49,3 +49,26 @@ header h1 {
   cursor: pointer;
   transition: 0.3s; 
 }
+
+/* Container for dashboard statistics cards */
+/* Uses flex: 1 to distribute cards equally across the header */
+#analytics {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+
+
+/* Individual data cards within the analytics bar */
+/* Background white + shadow creates a clean 'Card' UI effect */
+#analytics div {
+  flex: 1;
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: transform 0.2s; 
+}
