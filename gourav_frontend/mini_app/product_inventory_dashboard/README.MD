@@ -31,11 +31,11 @@ mini_app/
 2. Open the project folder  
 3. Open index.html in any browser  
 
-No setup is required.
 
-## Features  
 
-### Core Features  
+✨ Features  
+
+### 🔹 Core Features  
 
 - Dynamic Product Rendering  
 - Search Functionality  
@@ -50,10 +50,18 @@ No setup is required.
 
 ---
 
-### Bonus Features  
+### 🌟 Bonus Features  
 
 - Edit Product Functionality  
 - Multiple Filters Working Together  
 - Responsive Design  
 - Category-wise Analytics  
 - Empty State Handling  
+
+
+## 📸 Screenshots  
+
+### Dashboard View  
+Shows all products in a grid along with inventory analytics like total products, total value, and out-of-stock count.  
+
+![Dashboard](./screenshots/dashboard.png)
