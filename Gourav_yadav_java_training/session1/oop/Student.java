@@ -1,9 +1,5 @@
-package Gourav_yadav_java_training.session1.oop;
+package gourav_yadav_java_training.session1.oop;
 
-
-/**
- * Demonstrates Encapsulation + Base Class for Inheritance
- */
 public class Student {
 
     private String name;

@@ -1,4 +1,4 @@
-package Gourav_yadav_java_training.session1.generics;
+package gourav_yadav_java_training.session1.generics;
 
 public class TaskRunner extends Thread {
 

@@ -1,13 +1,10 @@
-package Gourav_yadav_java_training.session1.oop;
+package gourav_yadav_java_training.session1.oop;
 
 
 
 import java.util.Scanner;
 
-/**
- * Runner class to demonstrate OOP concepts:
- * Encapsulation, Inheritance, Polymorphism
- */
+
 public class OOPRunner {
 
     public static void main(String[] args) {

@@ -1,4 +1,4 @@
-package Gourav_yadav_java_training.session1.collections;
+package gourav_yadav_java_training.session1.collections;
 
 import java.util.Scanner;
 import java.util.Arrays;
@@ -24,6 +24,7 @@ public class ArrayOperationsRunner {
 
         if (!scanner.hasNextInt()) {
             System.out.println("Invalid input.");
+            
             scanner.next();
             return new int[0];
         }
