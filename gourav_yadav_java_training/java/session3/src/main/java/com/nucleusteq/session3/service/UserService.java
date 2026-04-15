@@ -76,4 +76,15 @@ public class UserService {
 
         return "success";
     }
+
+    public String deleteUser(int id, Boolean confirm) {
+        if (confirm == null || !confirm) {
+            return "Confirmation required"; // confirmation is required before deleting.
+        }
+
+        // here we  calls the repository to remove the data
+        boolean isDeleted = userRepository.deleteUserById(id);
+
+        return isDeleted ? "User deleted successfully" : "User not found";
+    }
 }
