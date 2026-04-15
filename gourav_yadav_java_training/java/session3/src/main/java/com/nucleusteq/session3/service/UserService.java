@@ -54,4 +54,21 @@ public class UserService {
         // Returns all users if no parameters were passed, or the filtered list otherwise.
         return result;
     }
+
+    public String validateAndSubmit(User user) {
+        // validation for null or empty values
+        if (user.getName() == null || user.getName().trim().isEmpty()) {
+            return "invalid";
+        }
+
+        if (user.getAge()== null || user.getAge() <= 0) {
+            return "invalid";
+        }
+
+        if (user.getRole() == null || user.getRole().trim().isEmpty()) {
+            return "invalid";
+        }
+
+        return "success";
+    }
 }
