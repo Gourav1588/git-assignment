@@ -57,6 +57,11 @@ public class UserService {
 
     public String validateAndSubmit(User user) {
         // validation for null or empty values
+
+        if (user.getId() == null) {
+            return "invalid";
+        }
+
         if (user.getName() == null || user.getName().trim().isEmpty()) {
             return "invalid";
         }
