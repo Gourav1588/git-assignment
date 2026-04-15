@@ -3,6 +3,8 @@ package com.nucleusteq.session3.service;
 import com.nucleusteq.session3.model.User;
 import com.nucleusteq.session3.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import com.nucleusteq.session3.exception.ValidationException;
+import com.nucleusteq.session3.exception.UserNotFoundException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,38 +57,46 @@ public class UserService {
         return result;
     }
 
-    public boolean validateAndSave(User user) {
+    public void validateAndSave(User user) {
 
-        // Validation
-        if (user.getId() == null) return false;
+        // ID must be present
+        if (user.getId() == null) {
+            throw new ValidationException("ID is mandatory.");
+        }
 
-        if (user.getName() == null || user.getName().trim().isEmpty()) return false;
+        // Name should not be null or empty
+        if (user.getName() == null || user.getName().trim().isEmpty()) {
+            throw new ValidationException("Name cannot be empty.");
+        }
 
-        if (user.getAge() == null || user.getAge() <= 0) return false;
-
-        if (user.getRole() == null || user.getRole().trim().isEmpty()) return false;
-
-        //  Duplicate ID check.
-        boolean exists = userRepository.findAll()
-                .stream()
+        // Check if a user with same ID already exists
+        boolean exists = userRepository.findAll().stream()
                 .anyMatch(u -> u.getId().equals(user.getId()));
 
-        if (exists) return false;
+        if (exists) {
+            throw new ValidationException("User with ID " + user.getId() + " already exists.");
+        }
 
-        // Save user if valid
+        // Save user if all validations pass
         userRepository.save(user);
-
-        return true;
     }
 
     public String deleteUser(int id, Boolean confirm) {
+
+        // Require confirmation before deletion
         if (confirm == null || !confirm) {
-            return "Confirmation required"; // confirmation is required before deleting.
+            throw new ValidationException("Confirmation required");
         }
 
-        // here we  calls the repository to remove the data
+        // Try to delete user from repository
         boolean isDeleted = userRepository.deleteUserById(id);
 
-        return isDeleted ? "User deleted successfully" : "User not found";
+        // If user not found, throw exception
+        if (!isDeleted) {
+            throw new UserNotFoundException("User with ID " + id + " not found.");
+        }
+
+        // Return success message
+        return "User deleted successfully";
     }
 }

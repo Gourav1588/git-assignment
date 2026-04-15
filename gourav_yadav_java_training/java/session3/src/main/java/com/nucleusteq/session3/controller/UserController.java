@@ -42,28 +42,21 @@ public class UserController {
 
 
     @PostMapping("/submit")
-    public ResponseEntity<String> submitUser(@RequestBody User user) {
+    public ResponseEntity<String> submit(@RequestBody User user) {
 
-        boolean isValid = userService.validateAndSave(user);
+        // Validate and save user (exceptions handled globally)
+        userService.validateAndSave(user);
 
-        if (!isValid) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Invalid input. Please provide valid id, name, age, and role.");
-        }
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body("User submitted successfully.");
+        // Return success response
+        return new ResponseEntity<>("User added successfully", HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUser(
-            @PathVariable int id,
-            @RequestParam(required = false) Boolean confirm) {
+    public ResponseEntity<String> delete(@PathVariable int id,
+                                         @RequestParam(required = false) Boolean confirm) {
 
-        String response = userService.deleteUser(id, confirm);
-        if (response.equals("Confirmation required")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
-        return ResponseEntity.ok(response);
+        String message = userService.deleteUser(id, confirm);
+
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 }

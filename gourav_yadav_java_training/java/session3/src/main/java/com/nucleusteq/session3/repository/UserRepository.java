@@ -37,12 +37,13 @@ public class UserRepository {
      * This is used by the Service layer to begin the filtering process.
      */
     public List<User> findAll() {
-        return users;
+
+        return new ArrayList<>(users);
     }
 
     public boolean deleteUserById(int id) {
         // This  removes the user from the 'users' list
-        return users.removeIf(user -> user.getId() == id);
+        return users.removeIf(user -> user.getId().equals(id));
     }
 
     public void save(User user) {
