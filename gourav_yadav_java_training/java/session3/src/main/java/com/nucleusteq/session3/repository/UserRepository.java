@@ -39,4 +39,9 @@ public class UserRepository {
     public List<User> findAll() {
         return users;
     }
+
+    public boolean deleteUserById(int id) {
+        // This  removes the user from the 'users' list
+        return users.removeIf(user -> user.getId() == id);
+    }
 }
