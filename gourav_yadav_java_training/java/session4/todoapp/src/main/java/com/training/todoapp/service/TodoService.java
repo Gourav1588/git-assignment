@@ -68,10 +68,11 @@ public class TodoService {
     }
 
     // DELETE
-    public void deleteTodo(Long id) {
+    public String deleteTodo(Long id) {
         Todo todo = todoRepository.findById(id)
                 .orElseThrow(() -> new TodoNotFoundException("Todo not found with id: " + id));
         todoRepository.delete(todo);
+        return "Todo with id " + id + " deleted successfully";
     }
 
     // Convert Entity → DTO to control response data
