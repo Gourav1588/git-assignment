@@ -3,6 +3,7 @@ package com.training.todoapp.dto;
 import com.training.todoapp.entity.Todo.Status;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDateTime;
 
 public class TodoDTO {
 
@@ -19,6 +20,8 @@ public class TodoDTO {
 
     private Status status;// Optional → defaults to PENDING in backend
 
+    private LocalDateTime createdAt;
+
     public TodoDTO() {}
 
     // Getters & Setters
@@ -33,4 +36,9 @@ public class TodoDTO {
 
     public Status getStatus() { return status; }
     public void setStatus(Status status) { this.status = status; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 }

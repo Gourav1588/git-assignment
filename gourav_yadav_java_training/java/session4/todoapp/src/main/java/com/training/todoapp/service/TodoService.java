@@ -21,14 +21,14 @@ public class TodoService {
 
     // CREATE
     public TodoDTO createTodo(TodoDTO dto) {
-        Todo todo = new Todo();
-        todo.setTitle(dto.getTitle());
-        todo.setDescription(dto.getDescription());
-        todo.setStatus(dto.getStatus() != null ? dto.getStatus() : Todo.Status.PENDING);
-
-        Todo saved = todoRepository.save(todo);
-        return convertToDTO(saved);
+        Todo todo = new Todo(
+                dto.getTitle(),
+                dto.getDescription(),
+                dto.getStatus()
+        );
+        return convertToDTO(todoRepository.save(todo));
     }
+
 
     // GET ALL
     public List<TodoDTO> getAllTodos() {
@@ -50,14 +50,9 @@ public class TodoService {
         Todo todo = todoRepository.findById(id)
                 .orElseThrow(() -> new TodoNotFoundException("Todo not found with id: " + id));
 
-        // Validate allowed status transitions
+        // Allow both PENDING→COMPLETED and COMPLETED→PENDING
         if (dto.getStatus() != null && !dto.getStatus().equals(todo.getStatus())) {
-            if ((todo.getStatus() == Todo.Status.PENDING && dto.getStatus() == Todo.Status.COMPLETED) ||
-                    (todo.getStatus() == Todo.Status.COMPLETED && dto.getStatus() == Todo.Status.PENDING)) {
-                todo.setStatus(dto.getStatus());
-            } else {
-                throw new IllegalArgumentException("Invalid status transition");
-            }
+            todo.setStatus(dto.getStatus());
         }
 
         if (dto.getTitle() != null) todo.setTitle(dto.getTitle());
@@ -84,6 +79,7 @@ public class TodoService {
         dto.setTitle(todo.getTitle());
         dto.setDescription(todo.getDescription());
         dto.setStatus(todo.getStatus());
+        dto.setCreatedAt(todo.getCreatedAt());
         return dto;
     }
 }

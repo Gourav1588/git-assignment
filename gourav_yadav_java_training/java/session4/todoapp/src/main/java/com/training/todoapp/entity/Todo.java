@@ -21,7 +21,7 @@ public class Todo {
     @Column(nullable = false)
     private Status status; // Stores enum as String (PENDING/COMPLETED)
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     public enum Status {
@@ -57,5 +57,5 @@ public class Todo {
     public void setStatus(Status status) { this.status = status; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
 }
