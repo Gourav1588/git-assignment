@@ -47,6 +47,15 @@ public class TodoController {
         return ResponseEntity.ok(todoService.updateTodo(id, dto));
     }
 
+    // Partial update Todo
+    @PatchMapping("/{id}")
+    public ResponseEntity<TodoDTO> patchTodo(
+            @PathVariable Long id,
+            @RequestBody TodoDTO dto) {
+
+        return ResponseEntity.ok(todoService.updateTodo(id, dto));
+    }
+
     // Delete a Todo by ID
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTodo(@PathVariable Long id) {
