@@ -14,65 +14,71 @@ public class TodoService {
 
     private final TodoRepository todoRepository;
 
-    // Service layer handles business logic and DTO ↔ Entity conversion
+    // Constructor injection for required dependencies
     public TodoService(TodoRepository todoRepository) {
         this.todoRepository = todoRepository;
     }
 
-    // CREATE
+    /**
+     * Creates a new Todo task with default status and timestamp.
+     */
     public TodoDTO createTodo(TodoDTO dto) {
-        Todo todo = new Todo(
-                dto.getTitle(),
-                dto.getDescription(),
-                dto.getStatus()
-        );
+        Todo todo = new Todo(dto.getTitle(), dto.getDescription(), dto.getStatus());
         return convertToDTO(todoRepository.save(todo));
     }
 
-
-    // GET ALL
+    /**
+     * Retrieves all Todo tasks from the database.
+     */
     public List<TodoDTO> getAllTodos() {
-        return todoRepository.findAll()
-                .stream()
+        return todoRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    // GET BY ID
+    /**
+     * Retrieves a single Todo by its ID. Throws an exception if not found.
+     */
     public TodoDTO getTodoById(Long id) {
-        Todo todo = todoRepository.findById(id)
-                .orElseThrow(() -> new TodoNotFoundException("Todo not found with id: " + id));
-        return convertToDTO(todo);
+        return convertToDTO(getTodoEntity(id));
     }
 
-    // UPDATE
+    /**
+     * Updates an existing Todo. Enforces status transition rules.
+     */
     public TodoDTO updateTodo(Long id, TodoDTO dto) {
-        Todo todo = todoRepository.findById(id)
-                .orElseThrow(() -> new TodoNotFoundException("Todo not found with id: " + id));
+        Todo todo = getTodoEntity(id);
 
-        // Allow both PENDING→COMPLETED and COMPLETED→PENDING
-        if (dto.getStatus() != null && !dto.getStatus().equals(todo.getStatus())) {
+        // Prevent invalid same-state transitions (e.g., PENDING -> PENDING)
+        if (dto.getStatus() != null) {
+            if (todo.getStatus().equals(dto.getStatus())) {
+                throw new IllegalArgumentException("Invalid transition. Status is already " + todo.getStatus());
+            }
             todo.setStatus(dto.getStatus());
         }
 
+        // Apply partial updates if fields are provided
         if (dto.getTitle() != null) todo.setTitle(dto.getTitle());
         if (dto.getDescription() != null) todo.setDescription(dto.getDescription());
 
-        Todo updated = todoRepository.save(todo);
-        return convertToDTO(updated);
+        return convertToDTO(todoRepository.save(todo));
     }
 
-
-
-    // DELETE
+    /**
+     * Deletes a Todo by its ID.
+     */
     public String deleteTodo(Long id) {
-        Todo todo = todoRepository.findById(id)
-                .orElseThrow(() -> new TodoNotFoundException("Todo not found with id: " + id));
-        todoRepository.delete(todo);
+        todoRepository.delete(getTodoEntity(id));
         return "Todo with id " + id + " deleted successfully";
     }
 
-    // Convert Entity → DTO to control response data
+    // Helper method to fetch entity and handle 404s
+    private Todo getTodoEntity(Long id) {
+        return todoRepository.findById(id)
+                .orElseThrow(() -> new TodoNotFoundException("Todo not found with id: " + id));
+    }
+
+    // Manual mapping from Entity to DTO to prevent exposing database models
     private TodoDTO convertToDTO(Todo todo) {
         TodoDTO dto = new TodoDTO();
         dto.setId(todo.getId());
