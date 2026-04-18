@@ -1,9 +1,9 @@
 package com.training.todoapp.dto;
 
 import com.training.todoapp.entity.Todo.Status;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
+import jakarta.validation.constraints.NotBlank;
 
 public class TodoDTO {
 
@@ -11,7 +11,7 @@ public class TodoDTO {
 
     private Long id;
 
-    @NotNull(message = "Title cannot be null")
+    @NotBlank(message = "Title cannot be blank")
     @Size(min = 3, message = "Title must be at least 3 characters")
     private String title;
 
