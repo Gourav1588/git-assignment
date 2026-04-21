@@ -1,7 +1,7 @@
 package com.vehicle.rental.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;git
+import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
 
@@ -42,6 +42,10 @@ public class Vehicle {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    // The current daily rental rate for this specific vehicle.
+    @Column(name = "price_per_day", nullable = false)
+    private Double pricePerDay;
 
     public enum VehicleType {
         CAR, BIKE
