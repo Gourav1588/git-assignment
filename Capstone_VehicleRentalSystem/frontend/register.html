@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Rental — Register</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="auth-container">
+    <div class="auth-card">
+
+        <div class="auth-header">
+            <h1>Vehicle Rental</h1>
+            <p>Create your account</p>
+        </div>
+
+        <!-- Error message box -->
+        <div class="alert alert-error" id="errorMsg"></div>
+
+        <!-- Success message box -->
+        <div class="alert alert-success" id="successMsg"></div>
+
+        <form id="registerForm">
+
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input
+                        type="text"
+                        id="name"
+                        placeholder="Akash Prajapati"
+                        required
+                />
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input
+                        type="email"
+                        id="email"
+                        placeholder="akash@gmail.com"
+                        required
+                />
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input
+                        type="password"
+                        id="password"
+                        placeholder="Minimum 6 characters"
+                        required
+                        minlength="6"
+                />
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input
+                        type="password"
+                        id="confirmPassword"
+                        placeholder="Repeat your password"
+                        required
+                />
+            </div>
+
+            <button type="submit" class="btn-primary" id="registerBtn">
+                Create Account
+            </button>
+
+        </form>
+
+        <div class="auth-footer">
+            <p>Already have an account?
+                <a href="index.html">Sign in here</a>
+            </p>
+        </div>
+
+    </div>
+</div>
+
+<script src="js/auth.js"></script>
+
+</body>
+</html>
