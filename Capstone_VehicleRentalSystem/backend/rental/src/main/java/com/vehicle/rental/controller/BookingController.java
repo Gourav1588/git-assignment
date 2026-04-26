@@ -93,16 +93,5 @@ public class BookingController {
                 bookingService.getAllBookings(page, size));
     }
 
-    // Fetch bookings filtered by status (Admin only)
-    // Example: /status/ACTIVE or /status/PENDING
-    @GetMapping("/status/{status}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<BookingResponse>> getByStatus(
-            @PathVariable BookingStatus status,
-            @RequestParam(defaultValue = "0")  int page,
-            @RequestParam(defaultValue = "10") int size) {
 
-        return ResponseEntity.ok(
-                bookingService.getBookingsByStatus(status, page, size));
-    }
 }
