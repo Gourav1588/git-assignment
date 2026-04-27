@@ -16,5 +16,6 @@ public interface CategoryRepository extends JpaRepository<VehicleCategory, Long>
     // Retrieve a category based on its name
     // Returns Optional to safely handle cases where category may not exist
     Optional<VehicleCategory> findByName(String name);
+    Optional<VehicleCategory> findByNameIgnoreCase(String name);
 
 }

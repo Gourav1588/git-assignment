@@ -12,34 +12,23 @@ import com.vehicle.rental.repository.BookingRepository;
 import com.vehicle.rental.repository.VehicleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Slf4j
-@Service
+@Slf4j // Logging support
+@Service // Service layer
 @RequiredArgsConstructor
 public class VehicleService {
 
-    // Repository for vehicle-related database operations
-    private final VehicleRepository vehicleRepository;
+    private final VehicleRepository vehicleRepository; // DB access
+    private final BookingRepository bookingRepository; // Booking checks
+    private final CategoryService categoryService; // Category fetch
+    private final VehicleMapper vehicleMapper; // DTO mapper
 
-    // Repository used to validate booking constraints
-    private final BookingRepository bookingRepository;
-
-    // Service used to fetch category details
-    private final CategoryService categoryService;
-
-    // Mapper to convert between Entity and DTO
-    private final VehicleMapper vehicleMapper;
-
-    // Fetch all active vehicles with pagination and optional filters
-    // Supports filtering by type, category, and name (search)
+    // Fetch vehicles with filters + pagination
     public Page<VehicleResponse> getVehicles(
             int page, int size,
             VehicleType type,
@@ -47,77 +36,70 @@ public class VehicleService {
             String name) {
 
         // Validate pagination inputs
-        if (page < 0) {
-            throw new BadRequestException(
-                    "Page number cannot be negative");
-        }
+        if (page < 0) throw new BadRequestException("Page cannot be negative");
+        if (size <= 0) throw new BadRequestException("Size must be > 0");
 
-        if (size <= 0) {
-            throw new BadRequestException(
-                    "Page size must be greater than 0");
-        }
-
-        // Create pageable object with sorting (latest first)
+        // Create pageable (latest first)
         Pageable pageable = PageRequest.of(
                 page, size, Sort.by("createdAt").descending()
         );
 
-        // Call repository with dynamic filters
-        // Null values are ignored in query automatically
+        // Apply filters (ignore null/blank values)
         return vehicleRepository
                 .findAllWithFilters(
-                        name != null && !name.isBlank() ? name : null,
+                        name != null && !name.isBlank() ? name : "",
                         type,
                         categoryId,
                         pageable
                 )
-                // Convert entity to response DTO
-                .map(vehicleMapper::toResponse);
+                .map(vehicleMapper::toResponse); // Convert to DTO
     }
 
-    // Retrieve a single vehicle by its ID
-    // Used when viewing detailed vehicle information
+    // Get single vehicle by id
     public VehicleResponse getVehicleById(Long id) {
         Vehicle vehicle = vehicleRepository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Vehicle not found"));
 
-        return vehicleMapper.toResponse(vehicle);
+        return vehicleMapper.toResponse(vehicle); // Map to DTO
     }
 
-    // Create a new vehicle
+    // Create new vehicle
     @Transactional
     public VehicleResponse createVehicle(VehicleRequest request) {
-        log.debug("Creating vehicle: {}", request.getName());
+        String normalizedName = request.getName().trim();
 
-        // Convert request DTO to entity
+        // Prevent duplicate vehicle names
+        if (vehicleRepository.existsByNameIgnoreCase(normalizedName)) {
+            throw new BadRequestException("Vehicle already exists");
+        }
+
+        // Convert DTO → entity
         Vehicle vehicle = vehicleMapper.toEntity(request);
+        vehicle.setName(normalizedName); // Ensure clean name
 
-        // Assign category if provided
+        // Attach category if provided
         if (request.getCategoryId() != null) {
             vehicle.setCategory(
-                    categoryService.getCategoryById(
-                            request.getCategoryId())
+                    categoryService.getCategoryById(request.getCategoryId())
             );
         }
 
-        // Save entity and return response DTO
+        // Save and return response
         return vehicleMapper.toResponse(
                 vehicleRepository.save(vehicle));
     }
 
-    // Update an existing vehicle
+    // Update existing vehicle
     @Transactional
-    public VehicleResponse updateVehicle(
-            Long id, VehicleRequest request) {
-        log.debug("Updating vehicle id: {}", id);
+    public VehicleResponse updateVehicle(Long id, VehicleRequest request) {
 
-        // Fetch existing vehicle or throw exception
+        // Fetch existing vehicle
         Vehicle existing = vehicleRepository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Vehicle not found"));
 
-        // Update basic fields
+        // Update fields
         existing.setName(request.getName().trim());
         existing.setType(request.getType());
         existing.setPricePerDay(request.getPricePerDay());
@@ -126,46 +108,62 @@ public class VehicleService {
         // Update category if provided
         if (request.getCategoryId() != null) {
             existing.setCategory(
-                    categoryService.getCategoryById(
-                            request.getCategoryId())
+                    categoryService.getCategoryById(request.getCategoryId())
             );
         }
 
-        // Save updated entity and return response
+        // Save updated data
         return vehicleMapper.toResponse(
                 vehicleRepository.save(existing));
     }
 
-    // Soft delete vehicle (mark as inactive)
-    // Prevents data loss and keeps booking history intact
+    // Soft delete (mark inactive instead of removing)
     @Transactional
     public void softDeleteVehicle(Long id) {
-        log.debug("Soft deleting vehicle id: {}", id);
 
-        // Fetch vehicle or throw exception
+        // Fetch vehicle
         Vehicle vehicle = vehicleRepository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Vehicle not found"));
 
-        // Check if vehicle has active or pending bookings
+        // Block delete if active/pending bookings exist
         boolean hasActiveBookings = bookingRepository
                 .existsByVehicleIdAndStatusIn(
                         id,
                         List.of(BookingStatus.ACTIVE, BookingStatus.PENDING)
                 );
 
-        // Prevent deletion if bookings exist
         if (hasActiveBookings) {
-            throw new BadRequestException(
-                    "Cannot deactivate vehicle — " +
-                            "it has active or pending bookings"
-            );
+            throw new BadRequestException("Vehicle has active bookings");
         }
 
-        // Mark vehicle as inactive (soft delete)
-        vehicle.setActive(false);
+        vehicle.setActive(false); // Mark inactive
         vehicleRepository.save(vehicle);
+    }
 
-        log.debug("Vehicle {} soft deleted successfully", id);
+    // Toggle active/inactive status
+    @Transactional
+    public VehicleResponse toggleVehicleStatus(Long id) {
+
+        // Fetch vehicle
+        Vehicle vehicle = vehicleRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Vehicle not found"));
+
+        // If disabling, ensure no future bookings
+        if (vehicle.isActive()) {
+            boolean hasBookings = bookingRepository
+                    .existsActiveOrFutureBookingsForVehicle(id);
+
+            if (hasBookings) {
+                throw new BadRequestException(
+                        "Cannot deactivate: future bookings exist");
+            }
+        }
+
+        vehicle.setActive(!vehicle.isActive()); // Flip status
+
+        return vehicleMapper.toResponse(
+                vehicleRepository.save(vehicle));
     }
 }

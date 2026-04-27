@@ -18,20 +18,15 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
     // Supports optional filters like name, type, and category
     // If any parameter is null, that filter is ignored automatically
     // Only active vehicles are returned
-    @Query("""
-        SELECT v FROM Vehicle v
-        WHERE v.isActive = true
-        AND (:name IS NULL OR LOWER(v.name)
-            LIKE LOWER(CONCAT('%', :name, '%')))
-        AND (:type IS NULL OR v.type = :type)
-        AND (:categoryId IS NULL OR v.category.id = :categoryId)
-        """)
+    @Query("SELECT v FROM Vehicle v WHERE " +
+            "(:name = '' OR LOWER(v.name) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
+            "(:type IS NULL OR v.type = :type) AND " +
+            "(:categoryId IS NULL OR v.category.id = :categoryId)")
     Page<Vehicle> findAllWithFilters(
-            @Param("name")       String name,
-            @Param("type")       VehicleType type,
+            @Param("name") String name,
+            @Param("type") VehicleType type,
             @Param("categoryId") Long categoryId,
-            Pageable pageable
-    );
+            Pageable pageable);
 
     // Check if any vehicle exists for a given category
     // Useful before deleting a category to prevent orphan records
@@ -40,6 +35,8 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
     // Check if a vehicle exists and is currently active
     // Commonly used before performing operations like soft delete
     boolean existsByIdAndIsActiveTrue(Long id);
+
+    boolean existsByNameIgnoreCase(String name);
 
 
 }

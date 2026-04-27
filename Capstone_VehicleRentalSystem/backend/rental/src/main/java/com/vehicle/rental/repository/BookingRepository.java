@@ -5,36 +5,28 @@ import com.vehicle.rental.entity.Booking.BookingStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
 
-@Repository
+@Repository // Marks as JPA repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    // Fetch bookings for a specific user
-    // Used to display booking history for logged-in users
-    // Supports pagination for large datasets
+    // Get bookings by user (paginated)
     Page<Booking> findByUserId(Long userId, Pageable pageable);
 
-    // Fetch bookings based on status (e.g., ACTIVE, PENDING, COMPLETED)
-    // Typically used in admin dashboards for filtering bookings
+    // Get bookings by status (paginated)
     Page<Booking> findByStatus(BookingStatus status, Pageable pageable);
 
-    // Check if a vehicle has any bookings with given statuses
-    // Used before soft deleting a vehicle to prevent conflicts
-    boolean existsByVehicleIdAndStatusIn(
-            Long vehicleId,
-            List<BookingStatus> statuses
-    );
+    // Check if vehicle has bookings with given statuses
+    boolean existsByVehicleIdAndStatusIn(Long vehicleId, List<BookingStatus> statuses);
 
-    // Check whether a vehicle is available for a given date range
-    // Core logic to prevent overlapping bookings
-    // Considers only PENDING and ACTIVE bookings
-    // Returns true if no conflicting booking exists, otherwise false
+    // Check vehicle availability for date range
     @Query("""
         SELECT COUNT(b) = 0 
         FROM Booking b 
@@ -48,4 +40,17 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
+
+    // Check active or future bookings for vehicle
+    @Query("SELECT COUNT(b) > 0 FROM Booking b WHERE b.vehicle.id = :vehicleId " +
+            "AND b.status IN ('ACTIVE', 'CONFIRMED', 'PENDING') " +
+            "AND b.endDate >= CURRENT_DATE")
+    boolean existsActiveOrFutureBookingsForVehicle(@Param("vehicleId") Long vehicleId);
+
+    // Mark past bookings as completed
+    @Modifying
+    @Transactional
+    @Query("UPDATE Booking b SET b.status = 'COMPLETED' " +
+            "WHERE b.status = 'ACTIVE' AND b.endDate < :today")
+    int completePastBookings(@Param("today") LocalDate today);
 }
