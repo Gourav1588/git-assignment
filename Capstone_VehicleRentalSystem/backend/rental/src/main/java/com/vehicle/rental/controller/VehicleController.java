@@ -37,6 +37,12 @@ public class VehicleController {
         );
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<VehicleResponse> getVehicleById(@PathVariable Long id) {
+        log.info("Fetching vehicle id: {}", id);
+        return ResponseEntity.ok(vehicleService.getVehicleById(id));
+    }
+
     // Create new vehicle (Admin only)
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')") // Restrict access to ADMIN
@@ -44,6 +50,17 @@ public class VehicleController {
             @Valid @RequestBody VehicleRequest request) { // Validate input
         log.info("Creating vehicle: {}", request.getName()); // Log action
         return ResponseEntity.ok(vehicleService.createVehicle(request));
+    }
+
+
+    // Update existing vehicle (Admin only)
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')") // Restrict access to ADMIN
+    public ResponseEntity<VehicleResponse> updateVehicle(
+            @PathVariable Long id,
+            @Valid @RequestBody VehicleRequest request) {
+        log.info("Updating vehicle id: {}", id);
+        return ResponseEntity.ok(vehicleService.updateVehicle(id, request));
     }
 
     // Toggle vehicle availability/status (Admin only)

@@ -27,6 +27,7 @@ public class SecurityConfig {
             throws Exception {
 
         http
+
                 // Disable CSRF because we are using JWT (stateless API)
                 .csrf(csrf -> csrf.disable())
 

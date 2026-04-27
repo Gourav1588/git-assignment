@@ -47,10 +47,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "AND b.endDate >= CURRENT_DATE")
     boolean existsActiveOrFutureBookingsForVehicle(@Param("vehicleId") Long vehicleId);
 
-    // Mark past bookings as completed
-    @Modifying
-    @Transactional
-    @Query("UPDATE Booking b SET b.status = 'COMPLETED' " +
-            "WHERE b.status = 'ACTIVE' AND b.endDate < :today")
-    int completePastBookings(@Param("today") LocalDate today);
+
+
 }

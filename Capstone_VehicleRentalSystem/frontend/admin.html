@@ -161,6 +161,53 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="editVehicleModal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeEditModal()">×</button>
+        <h3>Edit Vehicle</h3>
+        <form id="editVehicleForm" onsubmit="submitEditVehicle(event)">
+
+            <input type="hidden" id="editVehicleId">
+
+            <div class="form-grid">
+                <div class="field">
+                    <label>Vehicle Name</label>
+                    <input type="text" id="editVName" required>
+                </div>
+                <div class="field">
+                    <label>Registration Number (Plate)</label>
+                    <input type="text" id="editRegNumber" required>
+                </div>
+                <div class="field">
+                    <label>Type</label>
+                    <select id="editVType" required>
+                        <option value="CAR">Car</option>
+                        <option value="BIKE">Bike</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Category</label>
+                    <select id="editVCategory" required>
+                        <option value="" disabled selected>-- Select Category --</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Price/Day (₹)</label>
+                    <input type="number" id="editVPrice" required>
+                </div>
+                <div class="field">
+                    <label>Description</label>
+                    <input type="text" id="editVDesc">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-outline" onclick="closeEditModal()">Cancel</button>
+                <button type="submit" class="btn-accent" id="updateVehicleBtn">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script src="config/config.js"></script>
 <script src="js/admin.js"></script>
 </body>

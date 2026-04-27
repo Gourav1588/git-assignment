@@ -59,15 +59,17 @@ async function loadCategories() {
         });
 
         if (res.ok) {
-            const data = await res.json();
+                    const data = await res.json();
 
-            // Populate dropdown options
-            const dropdown = document.getElementById('vCategory');
-            dropdown.innerHTML =
-                `<option disabled selected>-- Select --</option>` +
-                data.map(c => `<option value="${c.id}">${c.name}</option>`).join('') +
-                `<option value="OTHER">+ Add New</option>`;
-        }
+                    const optionsHtml = `<option disabled selected>-- Select --</option>` +
+                                        data.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
+                    // Populate the "Add" dropdown
+                    document.getElementById('vCategory').innerHTML = optionsHtml + `<option value="OTHER">+ Add New</option>`;
+
+                    // Populate the "Edit" dropdown
+                    document.getElementById('editVCategory').innerHTML = optionsHtml;
+                }
     } catch (e) {
         console.error("Category load error", e);
     }
@@ -167,7 +169,7 @@ async function loadAdminFleet() {
     const res = await fetch(`${API_BASE_URL}/vehicles?page=0&size=100`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     });
-
+console.log(res);
     if (res.ok) {
         const data = await res.json();
         const vehicles = data.content || data;
@@ -180,11 +182,15 @@ async function loadAdminFleet() {
                 // Status label
                 const statusBadge = isAvailable ? 'AVAILABLE' : 'UNAVAILABLE';
 
-                // Action button
-               // Action button
-                  const actionButton = isAvailable
-                   ? `<button class="action-btn delete" onclick="toggleVehicleStatus(${v.id}, true)">Retire</button>`
-                      : `<button class="action-btn activate" onclick="toggleVehicleStatus(${v.id}, false)">Activate</button>`;
+
+
+                 // Action buttons
+                                 const actionButton = `
+                                     <button class="action-btn" onclick="openEditModal(${v.id})" style="background: #f59e0b; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; margin-right: 5px;">Edit</button>
+                                     ${isAvailable
+                                         ? `<button class="action-btn delete" onclick="toggleVehicleStatus(${v.id}, true)">Retire</button>`
+                                         : `<button class="action-btn activate" onclick="toggleVehicleStatus(${v.id}, false)">Activate</button>`}
+                                 `;
 
                 return `<tr>
                     <td>#${v.id}</td>
@@ -319,6 +325,90 @@ function openAddModal() {
 // Close modal
 function closeAddModal() {
     document.getElementById('addVehicleModal').classList.remove('active');
+}
+
+// =========================================
+// EDIT VEHICLE LOGIC
+// =========================================
+
+// 1. Fetch data and open the modal
+async function openEditModal(id) {
+    try {
+        const res = await fetch(`${API_BASE_URL}/vehicles/${id}`, {
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        });
+
+        if (res.ok) {
+            const v = await res.json();
+
+            // Populate the form inputs with the existing data
+            document.getElementById('editVehicleId').value = v.id;
+            document.getElementById('editVName').value = v.name;
+            document.getElementById('editRegNumber').value = v.registrationNumber;
+            document.getElementById('editVType').value = v.type;
+            document.getElementById('editVPrice').value = v.pricePerDay;
+            document.getElementById('editVDesc').value = v.description || "";
+
+            if (v.category) {
+                document.getElementById('editVCategory').value = v.category.id;
+            }
+
+            // Show the modal
+            document.getElementById('editVehicleModal').classList.add('active');
+        }
+    } catch (e) {
+        showToast("Error loading vehicle details");
+    }
+}
+
+// 2. Close the modal
+function closeEditModal() {
+    document.getElementById('editVehicleModal').classList.remove('active');
+}
+
+// 3. Submit the changes to the backend
+async function submitEditVehicle(e) {
+    e.preventDefault();
+
+    const id = document.getElementById('editVehicleId').value;
+    const btn = document.getElementById('updateVehicleBtn');
+    btn.textContent = "Updating...";
+    btn.disabled = true;
+
+    // Package the updated data
+    const vehicleData = {
+        name: document.getElementById('editVName').value,
+        registrationNumber: document.getElementById('editRegNumber').value,
+        type: document.getElementById('editVType').value,
+        categoryId: parseInt(document.getElementById('editVCategory').value),
+        pricePerDay: parseFloat(document.getElementById('editVPrice').value),
+        description: document.getElementById('editVDesc').value
+    };
+
+    try {
+        const res = await fetch(`${API_BASE_URL}/vehicles/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify(vehicleData)
+        });
+
+        if (res.ok) {
+            showToast("Vehicle Updated Successfully!");
+            closeEditModal();
+            loadAdminFleet(); // Refresh the table
+        } else {
+            const errorData = await res.json();
+            showToast(errorData.message || "Failed to update vehicle");
+        }
+    } catch (err) {
+        showToast("Server connection failed.");
+    } finally {
+        btn.textContent = "Save Changes";
+        btn.disabled = false;
+    }
 }
 
 // Logout user
