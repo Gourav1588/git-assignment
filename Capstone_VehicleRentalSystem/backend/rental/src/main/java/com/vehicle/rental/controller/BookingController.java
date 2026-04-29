@@ -110,8 +110,8 @@ public class BookingController {
      * @param size The number of records per page.
      * @return A paginated list of all BookingResponse objects.
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Page<BookingResponse>> getAllBookings(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {

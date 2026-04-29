@@ -38,12 +38,10 @@ document.addEventListener('DOMContentLoaded', () => {
  */
 async function loadUserBookings() {
     try {
-        // Utilizing global apiFetch utility. Defaults to GET method and handles headers.
         const response = await apiFetch('/bookings/my?page=0&size=10');
 
         if (response.ok) {
             const pageData = await response.json();
-            // Extract the data array from the Spring Boot Pageable response structure
             const bookings = pageData.content || [];
             renderBookings(bookings);
         } else {
@@ -69,7 +67,6 @@ async function loadUserBookings() {
 function renderBookings(bookings) {
     const container = document.getElementById('bookingsContainer');
 
-    // Handle empty state
     if (bookings.length === 0) {
         container.innerHTML = `
             <div style="text-align:center; padding: 40px; color: var(--muted);">
@@ -79,25 +76,23 @@ function renderBookings(bookings) {
         return;
     }
 
-    // Capture the current date for time-based business logic
-    const today = new Date().toISOString().split('T')[0];
+    // Capture the current precise time for real-time business logic
+    const now = new Date();
 
     container.innerHTML = bookings.map(b => {
         const statusClass = b.status ? b.status.toLowerCase() : 'pending';
 
-        // Evaluate business rules to determine cancellation eligibility
-        const isTripStarted = b.startDate <= today;
+        // Parse exact timestamps for comparison
+        const startTime = new Date(b.startTime);
+        const isTripStarted = startTime <= now;
         const isAlreadyCancelled = b.status === 'CANCELLED' || b.status === 'COMPLETED';
 
         let actionButton = '';
 
-        // Conditionally render action buttons based on booking status and date
         if (!isAlreadyCancelled) {
             if (isTripStarted) {
-                // Render disabled lock indicator if the cancellation window has expired
-                actionButton = `<button disabled style="background: transparent; color: #64748b; border: 1px solid #334155; padding: 6px 12px; border-radius: 4px; cursor: not-allowed; margin-top: 10px; font-weight: 600; width: 100%; opacity: 0.7;" title="Cannot cancel on or after pick-up day">Locked (Trip Started)</button>`;
+                actionButton = `<button disabled style="background: transparent; color: #64748b; border: 1px solid #334155; padding: 6px 12px; border-radius: 4px; cursor: not-allowed; margin-top: 10px; font-weight: 600; width: 100%; opacity: 0.7;" title="The rental period has already begun">Locked (Trip Started)</button>`;
             } else {
-                // Render active cancellation button for upcoming trips
                 actionButton = `<button onclick="cancelBooking(${b.id})" style="background: transparent; color: #dc3545; border: 1px solid #dc3545; padding: 6px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px; font-weight: 600; width: 100%;">Cancel Booking</button>`;
             }
         }
@@ -114,7 +109,7 @@ function renderBookings(bookings) {
                     <div class="booking-info">
                         <h4>${b.vehicleName}</h4>
                         <p>Booking ID: #BK-${b.id}</p>
-                        <div class="dates">${b.startDate} ➔ ${b.endDate}</div>
+                        <div class="dates">${b.startTime} ➔ ${b.endTime}</div>
                     </div>
                 </div>
                 <div class="booking-status" style="display: flex; flex-direction: column; align-items: flex-end;">
@@ -134,33 +129,27 @@ function renderBookings(bookings) {
 
 /**
  * Manages tab navigation within the dashboard interface.
- * @param {string} tabId - The DOM ID of the target tab pane to display.
  */
 function switchTab(tabId) {
-    // Remove active state from all navigation elements and content panes
     document.querySelectorAll('.dash-link').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
 
-    // Apply active state to the selected navigation element and target pane
     document.getElementById('btn-' + tabId).classList.add('active');
     document.getElementById(tabId).classList.add('active');
 }
 
 /**
  * Transmits a cancellation request to the backend for a specific booking.
- * Utilizes a PUT request to update the status (Soft Delete) rather than a hard DB delete.
- * @param {number} bookingId - The unique identifier of the booking to cancel.
  */
 async function cancelBooking(bookingId) {
     if (!confirm("Are you sure you want to cancel this booking?")) return;
 
     try {
-        // Utilizing global apiFetch utility with PUT method specified.
         const response = await apiFetch(`/bookings/${bookingId}/cancel`, { method: 'PUT' });
 
         if (response.ok) {
             alert("Booking successfully cancelled!");
-            loadUserBookings(); // Refresh the dataset to reflect the updated status
+            loadUserBookings();
         } else {
             const error = await response.json();
             alert(error.message || "Failed to cancel the booking.");
@@ -176,9 +165,6 @@ async function cancelBooking(bookingId) {
    5. SESSION MANAGEMENT
    ========================================================================= */
 
-/**
- * Terminates the user session by clearing local storage and redirecting.
- */
 function handleLogout() {
     localStorage.removeItem('token');
     showToast("Logging out...");
@@ -189,31 +175,22 @@ function handleLogout() {
    6. ACCOUNT SETTINGS (PROFILE MANAGEMENT)
    ========================================================================= */
 
-/**
- * Handles the submission of the Account Settings form.
- * Updates the user's name and optionally their password.
- * @param {Event} event - The form submission event.
- */
 async function updateProfile(event) {
-    event.preventDefault(); // Prevent the page from refreshing
+    event.preventDefault();
 
     const btn = document.getElementById('saveProfileBtn');
     btn.textContent = 'Saving...';
     btn.disabled = true;
 
-    // Grab values from the form
     const newName = document.getElementById('settingName').value;
     const newPassword = document.getElementById('settingPassword').value;
 
-    // Build the payload (only include password if they typed a new one)
     const updatePayload = { name: newName };
     if (newPassword.trim() !== "") {
         updatePayload.password = newPassword;
     }
 
     try {
-        // IMPORTANT: Verify this endpoint matches your Spring Boot Controller!
-        // Common endpoints are '/users/me', '/users/profile', or just '/users'
         const response = await apiFetch('/users/profile', {
             method: 'PUT',
             body: JSON.stringify(updatePayload)
@@ -221,11 +198,7 @@ async function updateProfile(event) {
 
         if (response.ok) {
             showToast("Profile updated successfully!");
-
-            // Clear the password field so it doesn't sit there in plain text
             document.getElementById('settingPassword').value = '';
-
-            // Update the Welcome message on the sidebar
             document.getElementById('userNameDisplay').textContent = newName.split(' ')[0];
         } else {
             const errorData = await response.json();

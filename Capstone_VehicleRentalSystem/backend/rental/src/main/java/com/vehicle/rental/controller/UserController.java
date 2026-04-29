@@ -30,8 +30,8 @@ public class UserController {
      *
      * @return A list of user responses.
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<UserResponse>> getAllUsers() {
 
         log.info("Admin request to fetch all registered users");
