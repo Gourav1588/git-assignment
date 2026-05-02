@@ -36,6 +36,7 @@ public class BookingController {
      * @return The created BookingResponse object.
      */
     @PostMapping
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<BookingResponse> createBooking(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody BookingRequest request) {
@@ -55,6 +56,7 @@ public class BookingController {
      * @return The updated BookingResponse object.
      */
     @PutMapping("/{id}/confirm")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<BookingResponse> confirmBooking(
             @PathVariable Long id,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -74,6 +76,7 @@ public class BookingController {
      * @return The updated BookingResponse object.
      */
     @PutMapping("/{id}/cancel")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<BookingResponse> cancelBooking(
             @PathVariable Long id,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -93,6 +96,7 @@ public class BookingController {
      * @return A paginated list of the user's BookingResponse objects.
      */
     @GetMapping("/my")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Page<BookingResponse>> myBookings(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(defaultValue = "0") int page,

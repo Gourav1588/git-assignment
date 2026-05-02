@@ -18,7 +18,8 @@
     <li><a href="index.html">How it works</a></li>
   </ul>
   <div class="nav-cta">
-    <a href="profile.html" class="btn-outline">My Dashboard</a>
+    <!-- Added id="dashboardBtn" so JS can control where it goes -->
+    <a href="profile.html" id="dashboardBtn" class="btn-outline">My Dashboard</a>
   </div>
 </nav>
 
@@ -42,7 +43,9 @@
     <button class="btn-search" onclick="searchVehicles()">Search Cars</button>
     <button class="btn-clear" onclick="loadFleet()">Clear</button>
   </div>
-</div> <div class="filters-bar">
+</div>
+
+<div class="filters-bar">
   <input type="text" id="searchName" class="filter-input" placeholder="🔍 Search vehicle name...">
 
   <select id="filterType" class="filter-input">

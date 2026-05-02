@@ -111,7 +111,7 @@ public class VehicleController {
      * Adds a new vehicle to the fleet.
      */
     @PostMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<VehicleResponse> createVehicle(@Valid @RequestBody VehicleRequest request) {
         log.info("Admin request to create new vehicle: {}", request.getName());
         return ResponseEntity.ok(vehicleService.createVehicle(request));
@@ -121,7 +121,7 @@ public class VehicleController {
      * Updates an existing vehicle's information.
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<VehicleResponse> updateVehicle(
             @PathVariable Long id,
             @Valid @RequestBody VehicleRequest request) {
@@ -134,7 +134,7 @@ public class VehicleController {
      * Acts as a soft-delete (Retire/Activate).
      */
     @PutMapping("/{id}/toggle-status")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<VehicleResponse> toggleVehicleStatus(@PathVariable Long id) {
         log.info("Admin request to toggle status for vehicle ID: {}", id);
         return ResponseEntity.ok(vehicleService.toggleVehicleStatus(id));

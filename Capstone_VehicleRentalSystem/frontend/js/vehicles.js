@@ -1,77 +1,72 @@
-/* =========================================================================
-   DriveEasy - Fleet Management & Booking Engine
-   ========================================================================= */
-
-/** * Global State Management for the Fleet Grid
+/**
+ * =========================================================================
+ * DriveEasy - Fleet Management & Booking Engine
+ * =========================================================================
  */
+
 let allVehicles = [];
 let filteredFleet = [];
 let currentPage = 1;
 const itemsPerPage = 6;
 let activeVehicle = null;
 
-/* =========================================================================
-   INITIALIZATION
-   ========================================================================= */
-
-/**
- * Initializes DOM elements, applies date constraints, and triggers initial data fetch.
- */
 document.addEventListener('DOMContentLoaded', () => {
-  const now = new Date();
-      now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-      const currentDateTime = now.toISOString().slice(0, 16);
+    // 1. Dynamically route the dashboard button based on role
+    const currentRole = getUserRole();
+    const dashboardBtn = document.getElementById('dashboardBtn');
 
-      const startInput = document.getElementById('searchStart');
-      const endInput = document.getElementById('searchEnd');
+    if (dashboardBtn) {
+        if (currentRole === 'ADMIN' || currentRole === 'ROLE_ADMIN') {
+            dashboardBtn.href = 'admin.html';
+            dashboardBtn.textContent = 'Admin Panel';
+            dashboardBtn.style.borderColor = 'var(--accent)';
+            dashboardBtn.style.color = 'var(--accent)';
+        } else {
+            dashboardBtn.href = 'profile.html';
+            dashboardBtn.textContent = 'My Dashboard';
+        }
+    }
 
-      // Apply strict chronological constraints to time pickers
-      if (startInput && endInput) {
-          startInput.setAttribute('min', currentDateTime);
-          startInput.addEventListener('change', function() {
-              endInput.setAttribute('min', this.value);
-          });
-      }
+    // 2. Set up date pickers constraints
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    const currentDateTime = now.toISOString().slice(0, 16);
 
-    // Bind filter event listeners
+    const startInput = document.getElementById('searchStart');
+    const endInput = document.getElementById('searchEnd');
+
+    if (startInput && endInput) {
+        startInput.setAttribute('min', currentDateTime);
+        startInput.addEventListener('change', function() {
+            endInput.setAttribute('min', this.value);
+        });
+    }
+
+    // 3. Bind events for filtering
     document.getElementById('searchName')?.addEventListener('input', applyFilters);
     document.getElementById('filterType')?.addEventListener('change', applyFilters);
     document.getElementById('filterCat')?.addEventListener('change', applyFilters);
 
-    // Bind modal calculation listeners
+    // Bind events for booking calculation
     document.getElementById('bookStart')?.addEventListener('change', updateSummary);
     document.getElementById('bookEnd')?.addEventListener('change', updateSummary);
 
-    // =====================================================================
-    //  Check for dates passed from the Landing Page
-    // =====================================================================
+    // 4. Initial load logic
     if (document.getElementById('fleetGrid')) {
         const urlParams = new URLSearchParams(window.location.search);
         const passedStart = urlParams.get('start');
         const passedEnd = urlParams.get('end');
 
         if (passedStart && passedEnd && startInput && endInput) {
-            // 1. Fill the inputs with the passed dates
             startInput.value = passedStart;
             endInput.value = passedEnd;
-
-            // 2. Automatically trigger the availability search
             searchVehicles();
         } else {
-            // Otherwise, load the default entire fleet
             loadFleet();
         }
     }
 });
 
-/* =========================================================================
-   DATA FETCHING (API INTEGRATION)
-   ========================================================================= */
-
-/**
- * Fetches the complete, unfiltered vehicle catalog from the backend.
- * Resets search constraints and initializes the global state arrays.
- */
 async function loadFleet() {
     const searchStart = document.getElementById('searchStart');
     if (searchStart) searchStart.value = '';
@@ -96,10 +91,6 @@ async function loadFleet() {
     }
 }
 
-/**
- * Queries the backend for vehicles specifically available between requested dates.
- * Overwrites the global dataset with the filtered results.
- */
 async function searchVehicles() {
     const startDate = document.getElementById('searchStart').value;
     const endDate = document.getElementById('searchEnd').value;
@@ -110,7 +101,6 @@ async function searchVehicles() {
     }
 
     try {
-
         const response = await apiFetch(`/vehicles/search?startTime=${startDate}&endTime=${endDate}`);
 
         if (response.ok) {
@@ -119,7 +109,6 @@ async function searchVehicles() {
             currentPage = 1;
             renderGrid();
 
-            // Handle zero-state
             if (availableCars.length === 0) {
                 document.getElementById('fleetGrid').innerHTML =
                     "<h3 style='grid-column: 1/-1; text-align: center; color: var(--red); padding: 40px;'>No vehicles available for these dates.</h3>";
@@ -131,14 +120,6 @@ async function searchVehicles() {
     }
 }
 
-/* =========================================================================
-   UI RENDERING & FILTERING
-   ========================================================================= */
-
-/**
- * Evaluates local filter parameters and mutates the display array.
- * Resets pagination upon execution.
- */
 function applyFilters() {
     const searchTerm = document.getElementById('searchName')?.value.toLowerCase() || "";
     const typeFilter = document.getElementById('filterType')?.value || "";
@@ -156,10 +137,6 @@ function applyFilters() {
     renderGrid();
 }
 
-/**
- * Constructs and injects HTML elements for the vehicle grid.
- * Applies visual indicators based on vehicle availability.
- */
 function renderGrid() {
     const grid = document.getElementById('fleetGrid');
     if (!grid) return;
@@ -172,7 +149,6 @@ function renderGrid() {
     visibleVehicles.forEach(v => {
         let icon;
 
-        // Determine appropriate SVG iconography based on vehicle properties
         if (v.name.toLowerCase().includes('fortuner')) {
             icon = `<path d="M2 14.5c0-1.5 1-2.5 3-3l1.5-4.5c.3-1 1.2-1.5 2.2-1.5h6.6c1 0 1.9.5 2.2 1.5l1.5 4.5c2 .5 3 1.5 3 3v3h-2M2 14.5v3h2"/><path d="M6.5 11.5l1.2-3.8c.1-.4.5-.7.9-.7h6.8c.4 0 .8.3.9.7l1.2 3.8"/><path d="M12 7v4.5"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/><path d="M9 17.5h6"/><path d="M2 14.5h20"/>`;
         } else if (v.type === 'CAR') {
@@ -220,52 +196,38 @@ function renderGrid() {
     }
 }
 
-/**
- * Increments the pagination counter and renders the next subset of vehicles.
- */
 function loadMore() {
     currentPage++;
     renderGrid();
 }
 
-/* =========================================================================
-   TRANSACTION LOGIC & MODALS
-   ========================================================================= */
-
-/**
- * Opens the booking modal and populates it with the selected vehicle's data.
- * Validates active session presence before allowing interaction.
- *
- * @param {Object} vehicle - The vehicle object selected from the grid.
- */
-/**
- * Opens the booking modal and populates it with the selected vehicle's data.
- * Validates active session presence before allowing interaction.
- */
 function openModal(vehicle) {
-    if (!localStorage.getItem('token')) {
+    const token = localStorage.getItem('token');
+    if (!token) {
         showToast('Authentication required to process booking.');
         setTimeout(() => window.location.href = 'login.html', 1500);
         return;
     }
 
+    // Secondary protection: Admins shouldn't make consumer bookings
+    const role = getUserRole();
+    if (role === 'ADMIN' || role === 'ROLE_ADMIN') {
+        showToast('Admins cannot make customer bookings. Please use the Admin Panel.');
+        return;
+    }
+
     activeVehicle = vehicle;
     document.getElementById('modalVehicleName').textContent = vehicle.name;
-
-    // Updated to show the price of the clicked vehicle
     document.getElementById('modalPricePerDay').textContent = `₹${vehicle.pricePerDay.toLocaleString()} / day`;
 
-    // Reset fields for the new selection
     document.getElementById('bookStart').value = '';
     document.getElementById('bookEnd').value = '';
 
-    // Match the IDs in your HTML
     if (document.getElementById('summaryDuration')) {
         document.getElementById('summaryDuration').textContent = '0 hours';
     }
     document.getElementById('summaryTotal').textContent = '₹0';
 
-    // Set the minimum pick-up time to 'now'
     const now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
     document.getElementById('bookStart').min = now.toISOString().slice(0, 16);
@@ -273,18 +235,11 @@ function openModal(vehicle) {
     document.getElementById('bookingModal').classList.add('active');
 }
 
-/**
- * Closes the active booking modal and clears the selected vehicle state.
- */
 function closeModal() {
     document.getElementById('bookingModal').classList.remove('active');
     activeVehicle = null;
 }
 
-/**
- * Dynamically calculates and updates the total duration and cost in the UI.
- * Mirrors the backend Math.ceil(hours / 24) pricing logic.
- */
 function updateSummary() {
     const startStr = document.getElementById('bookStart').value;
     const endStr = document.getElementById('bookEnd').value;
@@ -300,15 +255,12 @@ function updateSummary() {
         if (end > start) {
             const diffTime = Math.abs(end - start);
 
-            // Calculate total hours
             let totalHours = Math.floor(diffTime / (1000 * 60 * 60));
             if (totalHours < 1) totalHours = 1;
 
-            // Calculate billable 24-hour blocks
             const billedDays = Math.ceil(totalHours / 24.0);
             const totalCost = billedDays * activeVehicle.pricePerDay;
 
-            // Update the UI elements
             const durationEl = document.getElementById('summaryDuration');
             if (durationEl) {
                 durationEl.textContent = `${totalHours} hr${totalHours > 1 ? 's' : ''} (${billedDays} day${billedDays > 1 ? 's' : ''} billed)`;
@@ -316,7 +268,6 @@ function updateSummary() {
 
             document.getElementById('summaryTotal').textContent = `₹${totalCost.toLocaleString()}`;
         } else {
-            // Reset if dates are invalid
             if (document.getElementById('summaryDuration')) {
                 document.getElementById('summaryDuration').textContent = '0 hours';
             }
@@ -325,10 +276,6 @@ function updateSummary() {
     }
 }
 
-/**
- * Submits the finalized booking request to the server.
- * Manages the transition from PENDING -> ACTIVE status.
- */
 async function confirmBooking() {
     const start = document.getElementById('bookStart').value;
     const end = document.getElementById('bookEnd').value;
@@ -344,18 +291,17 @@ async function confirmBooking() {
 
     try {
         const createResponse = await apiFetch('/bookings', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        vehicleId: activeVehicle.id,
-                        startTime: start,
-                        endTime: end
-                    })
-                });
+            method: 'POST',
+            body: JSON.stringify({
+                vehicleId: activeVehicle.id,
+                startTime: start,
+                endTime: end
+            })
+        });
 
         if (createResponse.ok) {
             const newBooking = await createResponse.json();
 
-            // Execute immediate confirmation protocol
             const confirmResponse = await apiFetch(`/bookings/${newBooking.id}/confirm`, {
                 method: 'PUT'
             });
@@ -376,5 +322,27 @@ async function confirmBooking() {
     } finally {
         btn.textContent = 'Confirm Booking';
         btn.disabled = false;
+    }
+}
+
+function getUserRole() {
+    const token = localStorage.getItem('token');
+    if (!token || token === 'undefined') return null;
+
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const roleData = payload.role || 'USER';
+
+        // Force uppercase to catch 'Admin', 'admin', or 'ADMIN'
+        const normalizedRole = String(roleData).toUpperCase();
+
+        if (normalizedRole === 'ADMIN' || normalizedRole === 'ROLE_ADMIN') {
+            return 'ADMIN';
+        }
+
+        return 'USER';
+    } catch(e) {
+        console.error("Token decoding failed:", e);
+        return 'USER';
     }
 }

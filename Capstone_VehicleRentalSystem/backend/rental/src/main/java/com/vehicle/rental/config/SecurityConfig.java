@@ -50,26 +50,20 @@ public class SecurityConfig {
                    4. AUTHORIZATION RULES (ORDER SENSITIVE)
                    ========================================================================= */
                 .authorizeHttpRequests(auth -> auth
-                        // PROTOCOL: Permit pre-flight OPTIONS requests for CORS compliance
+
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // DOOR 1: Public authentication and registration traffic
+
                         .requestMatchers("/api/auth/**").permitAll()
 
-                        // DOOR 2: Secure Administrative access (Requires ROLE_ADMIN)
-                        // These must be defined before the general GET permitAll rules
-                        .requestMatchers("/api/vehicles/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/bookings/**").hasRole("ADMIN")
-                        .requestMatchers("/api/users/**").hasRole("ADMIN")
-
-                        // DOOR 3: Public catalog visibility
                         .requestMatchers(HttpMethod.GET, "/api/vehicles/**", "/api/categories/**").permitAll()
 
-                        // DOOR 4: Catch-all for authenticated user operations
+
+                        .requestMatchers("/api/vehicles/admin/**").hasRole("ADMIN")
+
                         .anyRequest().authenticated()
                 )
 
-                // 5. INTERCEPTION: Inject the JWT validation layer before standard authentication
                 .addFilterBefore(
                         jwtAuthFilter,
                         UsernamePasswordAuthenticationFilter.class
