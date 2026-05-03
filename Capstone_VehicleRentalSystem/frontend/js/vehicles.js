@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const dashboardBtn = document.getElementById('dashboardBtn');
 
     if (dashboardBtn) {
-        if (currentRole === 'ADMIN' || currentRole === 'ROLE_ADMIN') {
+        if (currentRole === 'ADMIN') {
             dashboardBtn.href = 'admin.html';
             dashboardBtn.textContent = 'Admin Panel';
             dashboardBtn.style.borderColor = 'var(--accent)';
@@ -63,35 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('bookStart')?.addEventListener('change', updateSummary);
     document.getElementById('bookEnd')?.addEventListener('change', updateSummary);
 
-    // ─────────────────────────────────────────────────────────────────────
-    // FIX: Smart overlay click handler
-    //
-    // PROBLEM BEFORE:
-    // Clicking anywhere on the dark overlay area closed the modal
-    // immediately — even after the user selected dates and a PENDING
-    // booking was already created in the database. This caused the slot
-    // to be silently cancelled and confused the user.
-    //
-    // ROOT CAUSE:
-    // The modal overlay div was either:
-    // 1. Listening to all clicks and calling closeModal()
-    // 2. Clicks inside the card were bubbling up to the overlay
-    //
-    // FIX IN JS:
-    // We attach a click listener only on the overlay itself.
-    // e.target === modalOverlay makes sure we only react when the
-    // dark background is clicked directly — not when inner card
-    // elements bubble up.
-    //
-    // FIX IN HTML:
-    // modal-content has onclick="event.stopPropagation()" which
-    // stops ANY click inside the white card from reaching the overlay.
-    //
-    // TWO CASES HANDLED:
-    // 1. activeBookingId = null  → no slot reserved → safe to close
-    // 2. activeBookingId is SET  → PENDING booking exists in DB →
-    //    show toast, block close, force user to click Cancel or Confirm
-    // ─────────────────────────────────────────────────────────────────────
+
     const modalOverlay = document.getElementById('bookingModal');
     if (modalOverlay) {
         modalOverlay.addEventListener('click', function(e) {
@@ -301,9 +273,7 @@ async function openModal(vehicle) {
     document.getElementById('bookingModal').classList.add('active');
 }
 
-// Closes the booking modal and cancels any unconfirmed PENDING booking
-// Only called by X button or Cancel button — never triggered by overlay
-// click when a PENDING booking exists
+
 async function closeModal() {
     if (activeBookingId) {
         await apiFetch(`/bookings/${activeBookingId}/cancel`, { method: 'PUT' });
